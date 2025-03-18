@@ -4,7 +4,7 @@
 
 // Contructs a new orderbook server
 Server::Server(int port, Engine engine) : app(), engine(engine), port(port), users(), cur_order_idx() {
-    CROW_ROUTE(app, "/limit/<string>/<string>/<string>/<int>/<int>").methods(crow::HTTPMethod::POST)(
+    CROW_ROUTE(this->app, "/limit/<string>/<string>/<string>/<int>/<int>").methods(crow::HTTPMethod::POST)(
         [this](std::string user, std::string direction, std::string asset, int quantity, int price){
             bool dir;
             if (direction == "buy") {
@@ -23,7 +23,7 @@ Server::Server(int port, Engine engine) : app(), engine(engine), port(port), use
             });
         }
     );
-    CROW_ROUTE(app, "/market/<string>/<string>/<string>/<int>").methods(crow::HTTPMethod::POST)(
+    CROW_ROUTE(this->app, "/market/<string>/<string>/<string>/<int>").methods(crow::HTTPMethod::POST)(
         [this](std::string user, std::string direction, std::string asset, int quantity){
             bool dir;
             if (direction == "buy") {
@@ -41,27 +41,27 @@ Server::Server(int port, Engine engine) : app(), engine(engine), port(port), use
             });
         }
     );
-    CROW_ROUTE(app, "/user/<string>/<string>").methods(crow::HTTPMethod::POST)(
+    CROW_ROUTE(this->app, "/user/<string>/<string>").methods(crow::HTTPMethod::POST)(
         [this](std::string user_id, std::string callback){
             return this->update_user(user_id, callback);
         }
     );
-    CROW_ROUTE(app, "/orders/<string>/<string>/<int>").methods(crow::HTTPMethod::GET)(
+    CROW_ROUTE(this->app, "/orders/<string>/<string>/<int>").methods(crow::HTTPMethod::GET)(
         [this](std::string direction, std::string asset, int price){
             return this->get_orders(direction, asset, price);
         }
     );
-    CROW_ROUTE(app, "/books/<string>").methods(crow::HTTPMethod::POST)(
+    CROW_ROUTE(this->app, "/books/<string>").methods(crow::HTTPMethod::POST)(
         [this](std::string asset){
             return this->add_orderbook(asset);
         }
     );
-    CROW_ROUTE(app, "/cancel/<int>").methods(crow::HTTPMethod::POST)(
+    CROW_ROUTE(this->app, "/cancel/<int>").methods(crow::HTTPMethod::POST)(
         [this](int order_id){
             return this->cancel_order(order_id);
         }
     );
-    CROW_ROUTE(app, "/shutdown").methods(crow::HTTPMethod::POST)(
+    CROW_ROUTE(this->app, "/shutdown").methods(crow::HTTPMethod::POST)(
         [this](){
             return this->shutdown();
         }
