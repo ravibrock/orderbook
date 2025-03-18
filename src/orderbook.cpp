@@ -1,6 +1,18 @@
 #include "orderbook.hpp"
 
-Orderbook::Orderbook() : buy_depth(0), sell_depth(0) {}
+Orderbook::Orderbook(int min, int max) : buy_depth(0), sell_depth(0), orders(), min(min), max(max) {}
+
+int Orderbook::get_min_price() {
+    return this->min;
+}
+
+int Orderbook::get_max_price() {
+    return this->max;
+}
+
+std::optional<Order> Orderbook::cancel_order(int order_id) {
+    return Order{};
+}
 
 uint64_t Orderbook::get_buy_depth() {
     return this->buy_depth;

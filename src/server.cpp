@@ -51,9 +51,13 @@ Server::Server(int port, Engine engine) : app(), engine(engine), port(port), use
             return this->get_orders(direction, asset, price);
         }
     );
-    CROW_ROUTE(this->app, "/books/<string>").methods(crow::HTTPMethod::POST)(
-        [this](std::string asset){
-            return this->add_orderbook(asset);
+    CROW_ROUTE(this->app, "/books/<string>/<int>/<int>").methods(crow::HTTPMethod::POST)(
+        [this](std::string asset, int min_price, int max_price){
+            return this->add_orderbook(Market{
+                asset,
+                min_price,
+                max_price,
+            });
         }
     );
     CROW_ROUTE(this->app, "/cancel/<int>").methods(crow::HTTPMethod::POST)(
@@ -137,8 +141,8 @@ crow::response Server::update_user(std::string user_id, std::string callback) {
 }
 
 // Adds orderbook to the engine
-crow::response Server::add_orderbook(std::string asset) {
-    this->engine.add_orderbook(asset);
+crow::response Server::add_orderbook(Market market) {
+    this->engine.add_orderbook(market);
     return crow::response(200);
 }
 

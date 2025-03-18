@@ -5,8 +5,8 @@
 
 int main(int argc, char* argv[]) {
     int port = 8080;
-    std::vector<std::string> markets;
-    std::string usage = "Usage: " + std::string(argv[0]) + " [--port <port>] [--market <ticker>]...";
+    std::vector<Market> markets;
+    std::string usage = "Usage: " + std::string(argv[0]) + " [--port <port>] [--market <ticker> <min> <max>]...";
 
     if (argc == 1) {
         std::cerr << usage << std::endl;
@@ -23,10 +23,32 @@ int main(int argc, char* argv[]) {
                 return 1;
             }
         } else if (std::string(argv[i]) == "--market") {
-            if (i + 1 < argc) {
-                markets.push_back(argv[++i]);
+            if (i + 3 < argc) {
+                std::string name = argv[++i];
+                std::string arg1 = argv[++i];
+                std::string arg2 = argv[++i];
+                int min, max;
+                try {
+                    min = std::stoi(arg1);
+                } catch (const std::invalid_argument& e) {
+                    std::cerr << "Error: Not a valid integer: " << arg1 << std::endl;
+                    return 1;
+                } catch (const std::out_of_range& e) {
+                    std::cerr << "Error: Number out of range: " << arg1 << std::endl;
+                    return 1;
+                }
+                try {
+                    min = std::stoi(arg1);
+                } catch (const std::invalid_argument& e) {
+                    std::cerr << "Error: Not a valid integer: " << arg2 << std::endl;
+                    return 1;
+                } catch (const std::out_of_range& e) {
+                    std::cerr << "Error: Number out of range: " << arg2 << std::endl;
+                    return 1;
+                }
+                markets.push_back(Market{name, min, max});
             } else {
-                std::cerr << "Error: No market specified after --market" << std::endl;
+                std::cerr << "Error: No [ticker, min, max] specified after --market" << std::endl;
                 std::cerr << usage << std::endl;
                 return 1;
             }
