@@ -12,6 +12,8 @@ public:
     void add_orderbook(std::string asset);
     void remove_orderbook(std::string asset);
     bool orderbook_exists(std::string asset);
+    uint64_t get_buy_depth(std::string asset);
+    uint64_t get_sell_depth(std::string asset);
     std::vector<Order> place_order(Order order);
     std::unordered_map<int, int> get_orders(std::string direction, std::string asset, int price);
 

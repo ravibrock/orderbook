@@ -5,9 +5,17 @@
 Server::Server(int port, Engine engine) : app(), engine(engine), port(port), users() {
     CROW_ROUTE(app, "/limit/<string>/<string>/<string>/<int>/<int>").methods(crow::HTTPMethod::POST)(
         [this](std::string user, std::string direction, std::string asset, int quantity, int price){
+            bool dir;
+            if (direction == "buy") {
+                dir = BUY;
+            } else if (direction == "sell") {
+                dir = SELL;
+            } else {
+                return crow::response(404);
+            }
             return this->limit_order(Order{
                 user,
-                direction,
+                dir,
                 asset,
                 quantity,
                 price,
@@ -16,12 +24,19 @@ Server::Server(int port, Engine engine) : app(), engine(engine), port(port), use
     );
     CROW_ROUTE(app, "/market/<string>/<string>/<string>/<int>").methods(crow::HTTPMethod::POST)(
         [this](std::string user, std::string direction, std::string asset, int quantity){
-            return this->limit_order(Order{
+            bool dir;
+            if (direction == "buy") {
+                dir = BUY;
+            } else if (direction == "sell") {
+                dir = SELL;
+            } else {
+                return crow::response(404);
+            }
+            return this->market_order(Order{
                 user,
-                direction,
+                dir,
                 asset,
                 quantity,
-                direction == "buy" ? INT_MAX : INT_MIN,
             });
         }
     );
@@ -67,6 +82,37 @@ crow::response Server::limit_order(Order order) {
         this->inform_user(fill);
     }
     return crow::response(200);
+// Places a market order
+crow::response Server::market_order(Order order) {
+    if (!this->engine.orderbook_exists(order.asset)) {
+        return this->limit_order(order);
+    }
+
+    // Ensures that market orders don't "overflow" but lets us still use `limit_order()` functionality
+    if (order.direction == BUY) {
+        order.quantity = std::min((uint64_t) order.quantity, this->engine.get_sell_depth(order.asset));
+    } else {
+        order.quantity = std::min((uint64_t) order.quantity, this->engine.get_buy_depth(order.asset));
+    }
+
+    order.price = order.direction == BUY ? INT_MAX : INT_MIN;
+    return this->limit_order(order);
+}
+
+crow::response Server::cancel_order(int order_id) {
+    crow::json::wvalue data;
+    std::optional<Order> order = this->engine.cancel_order(order_id);
+    if (!order) {
+        data["message"] = "order not found";
+        return crow::response(204, data);
+    }
+    data["order_id"] = order->order_id;
+    data["direction"] = order->direction ? "sell" : "buy";
+    data["price"] = order->price;
+    data["quantity"] = order->quantity;
+    data["asset"] = order->asset;
+    data["user_id"] = order->user;
+    return crow::response(200, data);
 }
 
 // Updates the callback for when a user is filled

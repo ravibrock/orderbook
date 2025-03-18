@@ -32,3 +32,13 @@ std::vector<Order> Engine::place_order(Order order) {
 std::unordered_map<int, int> Engine::get_orders(std::string direction, std::string asset, int price) {
     return this->orderbooks[asset].get_orders(direction, price);
 }
+
+// Caller is responsible for checking if the orderbook exists
+uint64_t Engine::get_buy_depth(std::string asset) {
+    return this->orderbooks[asset].get_buy_depth();
+}
+
+// Caller is responsible for checking if the orderbook exists
+uint64_t Engine::get_sell_depth(std::string asset) {
+    return this->orderbooks[asset].get_sell_depth();
+}
