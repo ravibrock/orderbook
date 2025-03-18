@@ -28,7 +28,12 @@ int Orderbook::get_max_price() {
 }
 
 std::optional<Order> Orderbook::cancel_order(int order_id) {
-    return Order{};
+    if (this->prices.find(order_id) == this->prices.end()) {
+        return std::nullopt;
+    }
+    std::optional<Order> ret = this->book[this->prices[order_id]].remove(order_id);
+    this->prices.erase(order_id);
+    return ret;
 }
 
 uint64_t Orderbook::get_buy_depth() {
