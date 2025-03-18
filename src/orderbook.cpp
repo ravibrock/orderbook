@@ -67,7 +67,9 @@ Order Orderbook::copy_order(Order order) {
 // Places order and returns orders that were matched
 std::vector<Order> Orderbook::place_order(Order order) {
     std::vector<Order> orders;
-    if (order.direction == BUY) {
+    if (order.quantity == 0) { // Edge case for market orders hitting empty book
+        return orders;
+    } else if (order.direction == BUY) {
         while (order.price >= this->lo_ask) {
             Order cur = this->book[this->lo_ask-this->min_price].dequeue(); // Matched order
             if (order.quantity == cur.quantity) {
