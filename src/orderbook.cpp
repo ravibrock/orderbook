@@ -3,11 +3,6 @@
 
 /*
 TODO:
-- Add matching functionality
-    - Array of custom DLL deques
-- Add cancellation functionality
-    - Update order hashmap to point to each order's node
-    - This lets us remove efficiently
 - Implement get_orders
 */
 Orderbook::Orderbook(int min, int max) :
@@ -33,8 +28,23 @@ std::optional<Order> Orderbook::cancel_order(int order_id) {
         return std::nullopt;
     }
     std::optional<Order> ret = this->book[this->prices[order_id]].remove(order_id);
-    // TODO: Need to adjust lo_ask/hi_bid if this is the last bid/ask of that price
-    // TODO: Adjust [buy/sell]_depth
+
+    if (ret->direction == BUY) {
+        this->buy_depth -= ret->quantity;
+        if (this->buy_depth == 0) {
+            this->hi_bid = this->min_price - 1;
+        } else {
+            while (this->book[this->hi_bid].isEmpty()) this->hi_bid--;
+        }
+    } else {
+        this->sell_depth -= ret->quantity;
+        if (this->sell_depth == 0) {
+            this->lo_ask = this->max_price + 1;
+        } else {
+            while (this->book[this->lo_ask].isEmpty()) this->lo_ask++;
+        }
+    }
+
     this->prices.erase(order_id);
     return ret;
 }
