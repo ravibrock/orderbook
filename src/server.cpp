@@ -41,7 +41,7 @@ Server::Server(int port, Engine engine) : engine(engine), port(port), cur_order_
             });
         }
     );
-    CROW_ROUTE(this->app, "/user/<string>/<string>").methods(crow::HTTPMethod::POST)(
+    CROW_ROUTE(this->app, "/user/<string>/<path>").methods(crow::HTTPMethod::POST)(
         [this](std::string user_id, std::string callback){
             return this->update_user(user_id, callback);
         }
