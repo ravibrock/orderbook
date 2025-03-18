@@ -1,3 +1,4 @@
+#include <algorithm>
 #include "orderbook.hpp"
 
 /*
@@ -32,6 +33,8 @@ std::optional<Order> Orderbook::cancel_order(int order_id) {
         return std::nullopt;
     }
     std::optional<Order> ret = this->book[this->prices[order_id]].remove(order_id);
+    // TODO: Need to adjust lo_ask/hi_bid if this is the last bid/ask of that price
+    // TODO: Adjust [buy/sell]_depth
     this->prices.erase(order_id);
     return ret;
 }
@@ -54,8 +57,146 @@ Order Orderbook::copy_order(Order order) {
     ret.user = order.user;
     return ret;
 }
+
+// Places order and returns orders that were matched
+// TODO: Update to suitably fix indexing for order pricing
 std::vector<Order> Orderbook::place_order(Order order) {
-    return std::vector<Order>();
+    std::vector<Order> orders;
+    if (order.direction == BUY) {
+        while (order.price >= this->lo_ask) {
+            Order cur = this->book[this->lo_ask].dequeue(); // Matched order
+            if (order.quantity == cur.quantity) {
+                this->prices.erase(cur.order_id); // Delete cur from prices dict
+                order.price = cur.price; // Update price to cur
+
+                // Add to return dict of matched orders
+                orders.push_back(cur);
+                orders.push_back(order);
+
+                this->sell_depth -= cur.quantity; // Delete cur's depth from sell_depth
+
+                // Update lo_ask
+                if (this->sell_depth == 0) {
+                    this->lo_ask = this->max_price + 1;
+                } else {
+                    while (this->book[this->lo_ask].isEmpty()) this->lo_ask++;
+                }
+
+                return orders; // Break out since we're done
+            } else if (order.quantity < cur.quantity) {
+                // We fill at order's qty and cur's price
+                Order nxt = this->copy_order(cur);
+                nxt.quantity = order.quantity;
+
+                // Add to return dict of matched orders
+                orders.push_back(nxt);
+                orders.push_back(order);
+
+                // Update sell_depth and cur's quantity
+                cur.quantity -= order.quantity;
+                this->sell_depth -= order.quantity;
+                this->book[order.price].push(cur); // Toss back cur
+
+                return orders; // Break out since we're done
+            } else { // order.quantity > cur.quantity
+                Order part = this->copy_order(order);
+
+                this->prices.erase(cur.order_id); // Delete cur from prices dict
+
+                // We fill at cur's qty and price
+                part.quantity = cur.quantity;
+                part.price = cur.price;
+
+                // Add to return dict of matched orders
+                orders.push_back(cur);
+                orders.push_back(part);
+
+                // We're now looking for fewer orders and sell_depth is lower
+                order.quantity -= cur.quantity;
+                this->sell_depth -= cur.quantity;
+
+                // Update lo_ask
+                if (this->sell_depth == 0) {
+                    this->lo_ask = this->max_price + 1;
+                } else {
+                    while (this->book[this->lo_ask].isEmpty()) this->lo_ask++;
+                }
+            }
+        }
+        // If we get here, we need to add the order to the book
+        this->book[order.price].push(order);
+        this->prices[order.order_id] = order.price;
+        this->buy_depth += order.quantity;
+        this->hi_bid = std::max(order.price, this->hi_bid);
+        return orders;
+    } else {
+        while (order.price <= this->hi_bid) {
+            Order cur = this->book[this->hi_bid].dequeue(); // Matched order
+            if (order.quantity == cur.quantity) {
+                this->prices.erase(cur.order_id); // Delete cur from prices dict
+                order.price = cur.price; // Update price to cur
+
+                // Add to return dict of matched orders
+                orders.push_back(cur);
+                orders.push_back(order);
+
+                this->buy_depth -= cur.quantity; // Delete cur's depth from buy_depth
+
+                // Update hi_bid
+                if (this->buy_depth == 0) {
+                    this->hi_bid = this->min_price - 1;
+                } else {
+                    while (this->book[this->hi_bid].isEmpty()) this->hi_bid--;
+                }
+
+                return orders; // Break out since we're done
+            } else if (order.quantity < cur.quantity) {
+                // We fill at order's qty and cur's price
+                Order nxt = this->copy_order(cur);
+                nxt.quantity = order.quantity;
+
+                // Add to return dict of matched orders
+                orders.push_back(nxt);
+                orders.push_back(order);
+
+                // Update buy_depth and cur's quantity
+                cur.quantity -= order.quantity;
+                this->buy_depth -= order.quantity;
+                this->book[order.price].push(cur); // Toss back cur
+
+                return orders; // Break out since we're done
+            } else { // order.quantity > cur.quantity
+                Order part = this->copy_order(order);
+
+                this->prices.erase(cur.order_id); // Delete cur from prices dict
+
+                // We fill at cur's qty and price
+                part.quantity = cur.quantity;
+                part.price = cur.price;
+
+                // Add to return dict of matched orders
+                orders.push_back(cur);
+                orders.push_back(part);
+
+                // We're now looking for fewer orders and buy_depth is lower
+                order.quantity -= cur.quantity;
+                this->buy_depth -= cur.quantity;
+
+                // Update hi_bid
+                if (this->buy_depth == 0) {
+                    this->hi_bid = this->min_price - 1;
+                } else {
+                    while (this->book[this->hi_bid].isEmpty()) this->hi_bid--;
+                }
+            }
+        }
+        // If we get here, we need to add the order to the book
+        this->book[order.price].push(order);
+        this->prices[order.order_id] = order.price;
+        this->sell_depth += order.quantity;
+        this->lo_ask = std::min(order.price, this->lo_ask);
+        return orders;
+    }
 }
 
 std::unordered_map<int, int> Orderbook::get_orders(std::string direction, int price) {
