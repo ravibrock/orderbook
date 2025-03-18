@@ -48,7 +48,7 @@ Server::Server(int port, Engine engine) : app(), engine(engine), port(port), use
 // Places a limit order
 crow::response Server::limit_order(Order order) {
     crow::json::wvalue data;
-    if (!this->users.contains(order.user)) {
+    if (!this->user_exists(order.user)) {
         data["message"] = "user must be registered prior to placing an order";
         return crow::response(401, data);
     }
@@ -67,7 +67,7 @@ crow::response Server::limit_order(Order order) {
 crow::response Server::update_user(std::string user_id, std::string callback) {
     bool ret = false;
     crow::json::wvalue data;
-    if (this->users.contains(user_id)) ret = true;
+    if (this->user_exists(user_id)) ret = true;
     this->users[user_id] = callback;
     data["already_registered"] = ret;
     return crow::response(200, data);
@@ -108,6 +108,12 @@ crow::response Server::get_orders(std::string direction, std::string asset, int 
     return crow::response(200, data);
 }
 
+// Checks if a user exists
+bool Server::user_exists(std::string user_id) {
+    return this->users.find(user_id) != this->users.end();
+}
+
+// Shuts down the server
 void Server::shutdown() {
     this->app.stop();
 }

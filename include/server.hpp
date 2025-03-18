@@ -13,6 +13,7 @@ private:
     int port;
     crow::SimpleApp app;
     Engine engine;
+    bool user_exists(std::string user_id);
     std::unordered_map<std::string, std::string> users;
     crow::response limit_order(Order order);
     crow::response update_user(std::string user_id, std::string callback);

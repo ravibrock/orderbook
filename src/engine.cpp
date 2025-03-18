@@ -3,7 +3,7 @@
 Engine::Engine() : orderbooks() {}
 
 void Engine::add_orderbook(std::string asset) {
-    if (!this->orderbooks.contains(asset)) {
+    if (!this->orderbook_exists(asset)) {
         this->orderbooks[asset] = Orderbook();
     }
 }
@@ -14,7 +14,7 @@ void Engine::remove_orderbook(std::string asset) {
 
 // Returns if an orderbook has been initialized already
 bool Engine::orderbook_exists(std::string asset) {
-    return this->orderbooks.contains(asset);
+    return this->orderbooks.find(asset) != this->orderbooks.end();
 }
 
 // Caller is responsible for checking if the orderbook exists
