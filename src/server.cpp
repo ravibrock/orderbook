@@ -87,6 +87,14 @@ crow::response Server::limit_order(Order order) {
         data["message"] = "orderbook does not exist";
         return crow::response(404, data);
     }
+    if (
+        order.price < this->engine.get_min_price(order.asset) ||
+        order.price > this->engine.get_max_price(order.asset)
+    ) {
+        data["message"] = "price is out of bounds";
+        return crow::response(400, data);
+    }
+
     // set order_id to uuid
     order.order_id = this->cur_order_idx++;
     data["order_id"] = order.order_id;
@@ -110,7 +118,12 @@ crow::response Server::market_order(Order order) {
         order.quantity = std::min((uint64_t) order.quantity, this->engine.get_buy_depth(order.asset));
     }
 
-    order.price = order.direction == BUY ? INT_MAX : INT_MIN;
+    if (order.direction == BUY) {
+        this->engine.get_max_price(order.asset);
+    } else {
+        this->engine.get_min_price(order.asset);
+    }
+
     return this->limit_order(order);
 }
 
