@@ -2,6 +2,12 @@
 
 Engine::Engine() : orderbooks() {}
 
+Engine::Engine(std::vector<std::string> markets) : orderbooks() {
+    for (const auto& market : markets) {
+        this->add_orderbook(market);
+    }
+}
+
 void Engine::add_orderbook(std::string asset) {
     if (!this->orderbook_exists(asset)) {
         this->orderbooks[asset] = Orderbook();

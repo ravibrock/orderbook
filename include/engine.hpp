@@ -8,6 +8,7 @@
 class Engine {
 public:
     Engine();
+    Engine(std::vector<std::string> markets);
     void add_orderbook(std::string asset);
     void remove_orderbook(std::string asset);
     bool orderbook_exists(std::string asset);
