@@ -127,9 +127,9 @@ crow::response Server::market_order(Order order) {
     }
 
     if (order.direction == BUY) {
-        this->engine.get_max_price(order.asset);
+        order.price = this->engine.get_max_price(order.asset);
     } else {
-        this->engine.get_min_price(order.asset);
+        order.price = this->engine.get_min_price(order.asset);
     }
 
     return this->limit_order(order);
