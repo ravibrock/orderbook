@@ -5,20 +5,14 @@
 #include <vector>
 #include "orderbook.hpp"
 
-struct Order {
-    std::string user;
-    std::string direction;
-    std::string asset;
-    int quantity;
-    int price;
-};
-
 class Engine {
 public:
     Engine();
     void add_orderbook(std::string asset);
+    void remove_orderbook(std::string asset);
     bool orderbook_exists(std::string asset);
     std::vector<Order> place_order(Order order);
+    std::unordered_map<int, int> get_orders(std::string direction, std::string asset, int price);
 
 private:
     std::unordered_map<std::string, Orderbook> orderbooks;
