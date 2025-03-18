@@ -210,14 +210,14 @@ std::unordered_map<int, int> Orderbook::get_orders(bool direction, int price) {
     std::unordered_map<int, int> ret;
 
     if (direction == BUY) {
-        price = std::min(price, this->hi_bid);
+        price = std::max(price, this->hi_bid);
         for (int i = this->hi_bid; i >= price; i--) {
             if (!this->book[i-this->min_price].isEmpty()) {
                 ret[i] = this->book[i-this->min_price].get_quantity();
             }
         }
     } else {
-        price = std::max(price, this->lo_ask);
+        price = std::min(price, this->lo_ask);
         for (int i = this->lo_ask; i <= price; i++) {
             if (!this->book[i-this->min_price].isEmpty()) {
                 ret[i] = this->book[i-this->min_price].get_quantity();
