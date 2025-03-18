@@ -42,3 +42,13 @@ uint64_t Engine::get_buy_depth(std::string asset) {
 uint64_t Engine::get_sell_depth(std::string asset) {
     return this->orderbooks[asset].get_sell_depth();
 }
+
+// Order does not have to exist
+std::optional<Order> Engine::cancel_order(int order_id) {
+    for (auto& orderbook : this->orderbooks) {
+        if (std::optional<Order> order = orderbook.second.cancel_order(order_id)) {
+            return order;
+        }
+    }
+    return std::nullopt;
+}

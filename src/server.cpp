@@ -1,8 +1,9 @@
+#include <algorithm>
 #include <cpr/cpr.h>
 #include "server.hpp"
 
 // Contructs a new orderbook server
-Server::Server(int port, Engine engine) : app(), engine(engine), port(port), users() {
+Server::Server(int port, Engine engine) : app(), engine(engine), port(port), users(), cur_order_idx() {
     CROW_ROUTE(app, "/limit/<string>/<string>/<string>/<int>/<int>").methods(crow::HTTPMethod::POST)(
         [this](std::string user, std::string direction, std::string asset, int quantity, int price){
             bool dir;
@@ -55,6 +56,11 @@ Server::Server(int port, Engine engine) : app(), engine(engine), port(port), use
             return this->add_orderbook(asset);
         }
     );
+    CROW_ROUTE(app, "/cancel/<int>").methods(crow::HTTPMethod::POST)(
+        [this](int order_id){
+            return this->cancel_order(order_id);
+        }
+    );
     CROW_ROUTE(app, "/shutdown").methods(crow::HTTPMethod::POST)(
         [this](){
             return this->shutdown();
@@ -77,11 +83,16 @@ crow::response Server::limit_order(Order order) {
         data["message"] = "orderbook does not exist";
         return crow::response(404, data);
     }
+    // set order_id to uuid
+    order.order_id = this->cur_order_idx++;
+    data["order_id"] = order.order_id;
 
     for (Order fill : this->engine.place_order(order)) {
         this->inform_user(fill);
     }
-    return crow::response(200);
+    return crow::response(200, data);
+}
+
 // Places a market order
 crow::response Server::market_order(Order order) {
     if (!this->engine.orderbook_exists(order.asset)) {
