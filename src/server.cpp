@@ -14,7 +14,7 @@ Server::Server(int port, Engine engine) : app(), engine(engine), port(port), use
             });
         }
     );
-    CROW_ROUTE(app, "/limit/<string>/<string>/<string>/<int>").methods(crow::HTTPMethod::POST)(
+    CROW_ROUTE(app, "/market/<string>/<string>/<string>/<int>").methods(crow::HTTPMethod::POST)(
         [this](std::string user, std::string direction, std::string asset, int quantity){
             return this->limit_order(Order{
                 user,
@@ -25,20 +25,24 @@ Server::Server(int port, Engine engine) : app(), engine(engine), port(port), use
             });
         }
     );
-    CROW_ROUTE(app, "/limit/<string>/<string>").methods(crow::HTTPMethod::POST)(
+    CROW_ROUTE(app, "/user/<string>/<string>").methods(crow::HTTPMethod::POST)(
         [this](std::string user_id, std::string callback){
             return this->update_user(user_id, callback);
         }
     );
-    CROW_ROUTE(app, "/limit/<string>/<string>/<int>").methods(crow::HTTPMethod::GET)(
+    CROW_ROUTE(app, "/orders/<string>/<string>/<int>").methods(crow::HTTPMethod::GET)(
         [this](std::string direction, std::string asset, int price){
             return this->get_orders(direction, asset, price);
         }
     );
+    CROW_ROUTE(app, "/books/<string>").methods(crow::HTTPMethod::POST)(
+        [this](std::string asset){
+            return this->add_orderbook(asset);
+        }
+    );
     CROW_ROUTE(app, "/shutdown").methods(crow::HTTPMethod::POST)(
         [this](){
-            this->shutdown();
-            return crow::response(200);
+            return this->shutdown();
         }
     );
 }
@@ -73,6 +77,12 @@ crow::response Server::update_user(std::string user_id, std::string callback) {
     this->users[user_id] = callback;
     data["already_registered"] = ret;
     return crow::response(200, data);
+}
+
+// Adds orderbook to the engine
+crow::response Server::add_orderbook(std::string asset) {
+    this->engine.add_orderbook(asset);
+    return crow::response(200);
 }
 
 // Pings user when request is fulfilled
@@ -116,6 +126,7 @@ bool Server::user_exists(std::string user_id) {
 }
 
 // Shuts down the server
-void Server::shutdown() {
+crow::response Server::shutdown() {
     this->app.stop();
+    return crow::response(200);
 }
