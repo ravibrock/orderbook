@@ -14,14 +14,14 @@ struct Order {
 };
 
 class Engine {
-    public:
-        Engine();
-        void add_orderbook(std::string asset);
-        bool orderbook_exists(std::string asset);
-        std::vector<Order> place_order(Order order);
+public:
+    Engine();
+    void add_orderbook(std::string asset);
+    bool orderbook_exists(std::string asset);
+    std::vector<Order> place_order(Order order);
 
-    private:
-        std::unordered_map<std::string, Orderbook> orderbooks;
+private:
+    std::unordered_map<std::string, Orderbook> orderbooks;
 };
 
 #endif // ENGINE_H
