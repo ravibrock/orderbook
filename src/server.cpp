@@ -2,7 +2,7 @@
 #include "server.hpp"
 
 // Contructs a new orderbook server
-Server::Server(int port) : app(), engine(), port(port), users() {
+Server::Server(int port, Engine engine) : app(), engine(engine), port(port), users() {
     CROW_ROUTE(app, "/limit/<string>/<string>/<string>/<int>/<int>").methods(crow::HTTPMethod::POST)(
         [this](std::string user, std::string direction, std::string asset, int quantity, int price){
             return this->limit_order(Order{
@@ -46,6 +46,10 @@ crow::response Server::limit_order(Order order) {
         data["message"] = "user must be registered prior to placing an order";
         return crow::response(401, data);
     }
+    if (!this->engine.orderbook_exists(order.asset)) {
+        data["message"] = "orderbook does not exist";
+        return crow::response(404, data);
+    }
 
     for (Order fill : this->engine.place_order(order)) {
         this->inform_user(fill);
@@ -85,5 +89,15 @@ int Server::inform_user(Order fill) {
 
 // Gets orders up/down to a certain price
 crow::response Server::get_orders(std::string direction, std::string asset, int price) {
-    return crow::response(200);
+    crow::json::wvalue data;
+    if (!this->engine.orderbook_exists(asset)) {
+        data["message"] = "orderbook does not exist";
+        return crow::response(404, data);
+    }
+
+    std::unordered_map<int, int> orders = this->engine.get_orders(direction, asset, price);
+    for (auto&[price, quantity] : orders) {
+        data[std::to_string(price)] = quantity;
+    }
+    return crow::response(200, data);
 }
