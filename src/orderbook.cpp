@@ -6,8 +6,8 @@ Orderbook::Orderbook(int min, int max) :
     sell_depth(0),
     min_price(min),
     max_price(max),
-    lo_ask(min-1),
-    hi_bid(max+1),
+    lo_ask(max+1),
+    hi_bid(min-1),
     book(max - min + 1)
 {}
 
