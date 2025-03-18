@@ -27,6 +27,7 @@ private:
     int hi_bid; // Highest bid
     std::vector<Queue> book; // Array of queues for orders
     std::unordered_map<int, int> prices; // Map of order IDs to prices
+    Order copy_order(Order order);
 };
 
 #endif // ORDERBOOK_H
