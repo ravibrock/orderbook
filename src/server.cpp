@@ -63,7 +63,7 @@ Server::Server(int port, Engine engine) : app(), engine(engine), port(port), use
 }
 
 void Server::start_server() {
-    this->app.port(this->port).multithreaded().run();
+    this->app.port(this->port).run();
 }
 
 // Places a limit order
