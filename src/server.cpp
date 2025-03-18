@@ -35,6 +35,12 @@ Server::Server(int port, Engine engine) : app(), engine(engine), port(port), use
             return this->get_orders(direction, asset, price);
         }
     );
+    CROW_ROUTE(app, "/shutdown").methods(crow::HTTPMethod::POST)(
+        [this](){
+            this->shutdown();
+            return crow::response(200);
+        }
+    );
 
     app.port(this->port).multithreaded().run();
 }
@@ -100,4 +106,8 @@ crow::response Server::get_orders(std::string direction, std::string asset, int 
         data[std::to_string(price)] = quantity;
     }
     return crow::response(200, data);
+}
+
+void Server::shutdown() {
+    this->app.stop();
 }

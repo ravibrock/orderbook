@@ -18,6 +18,7 @@ private:
     crow::response update_user(std::string user_id, std::string callback);
     crow::response get_orders(std::string direction, std::string asset, int price);
     int inform_user(Order fill);
+    void shutdown();
 };
 
 #endif // SERVER_H
