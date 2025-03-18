@@ -1,7 +1,6 @@
 #ifndef ORDERBOOK_H
 #define ORDERBOOK_H
 
-#include <string>
 #include <vector>
 #include <unordered_map>
 #include "order.hpp"
@@ -12,7 +11,7 @@ public:
     Orderbook(int min_price, int max_price);
     std::vector<Order> place_order(Order order);
     std::optional<Order> cancel_order(int order_id);
-    std::unordered_map<int, int> get_orders(std::string direction, int price);
+    std::unordered_map<int, int> get_orders(bool direction, int price);
     uint64_t get_buy_depth();
     uint64_t get_sell_depth();
     int get_min_price();

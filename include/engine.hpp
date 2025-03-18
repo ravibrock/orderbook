@@ -24,7 +24,7 @@ public:
     int get_max_price(std::string asset);
     std::optional<Order> cancel_order(int order_id);
     std::vector<Order> place_order(Order order);
-    std::unordered_map<int, int> get_orders(std::string direction, std::string asset, int price);
+    std::unordered_map<int, int> get_orders(bool direction, std::string asset, int price);
 
 private:
     std::unordered_map<std::string, Orderbook> orderbooks;

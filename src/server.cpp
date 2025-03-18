@@ -48,7 +48,15 @@ Server::Server(int port, Engine engine) : engine(engine), port(port), cur_order_
     );
     CROW_ROUTE(this->app, "/orders/<string>/<string>/<int>").methods(crow::HTTPMethod::GET)(
         [this](std::string direction, std::string asset, int price){
-            return this->get_orders(direction, asset, price);
+            bool dir;
+            if (direction == "buy") {
+                dir = BUY;
+            } else if (direction == "sell") {
+                dir = SELL;
+            } else {
+                return crow::response(404);
+            }
+            return this->get_orders(dir, asset, price);
         }
     );
     CROW_ROUTE(this->app, "/books/<string>/<int>/<int>").methods(crow::HTTPMethod::POST)(
@@ -180,7 +188,7 @@ int Server::inform_user(Order fill) {
 }
 
 // Gets orders up/down to a certain price
-crow::response Server::get_orders(std::string direction, std::string asset, int price) {
+crow::response Server::get_orders(bool direction, std::string asset, int price) {
     crow::json::wvalue data;
     if (!this->engine.orderbook_exists(asset)) {
         data["message"] = "orderbook does not exist";

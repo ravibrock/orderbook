@@ -33,7 +33,7 @@ std::vector<Order> Engine::place_order(Order order) {
 }
 
 // Caller is responsible for checking if the orderbook exists
-std::unordered_map<int, int> Engine::get_orders(std::string direction, std::string asset, int price) {
+std::unordered_map<int, int> Engine::get_orders(bool direction, std::string asset, int price) {
     return this->get_orderbook(asset).get_orders(direction, price);
 }
 

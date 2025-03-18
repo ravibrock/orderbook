@@ -20,7 +20,7 @@ private:
     crow::response market_order(Order order);
     crow::response cancel_order(int order_id);
     crow::response update_user(std::string user_id, std::string callback);
-    crow::response get_orders(std::string direction, std::string asset, int price);
+    crow::response get_orders(bool direction, std::string asset, int price);
     crow::response add_orderbook(Market market);
     int cur_order_idx = 0;
     int inform_user(Order fill);
