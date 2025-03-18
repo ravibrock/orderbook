@@ -41,8 +41,10 @@ Server::Server(int port, Engine engine) : app(), engine(engine), port(port), use
             return crow::response(200);
         }
     );
+}
 
-    app.port(this->port).multithreaded().run();
+void Server::start_server() {
+    this->app.port(this->port).multithreaded().run();
 }
 
 // Places a limit order

@@ -8,6 +8,7 @@
 class Server {
 public:
     Server(int port, Engine engine);
+    void start_server();
 
 private:
     int port;
