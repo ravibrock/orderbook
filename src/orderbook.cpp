@@ -27,21 +27,21 @@ std::optional<Order> Orderbook::cancel_order(int order_id) {
     if (this->prices.find(order_id) == this->prices.end()) {
         return std::nullopt;
     }
-    std::optional<Order> ret = this->book[this->prices[order_id]].remove(order_id);
+    std::optional<Order> ret = this->book[this->prices[order_id-this->min_price]].remove(order_id);
 
     if (ret->direction == BUY) {
         this->buy_depth -= ret->quantity;
         if (this->buy_depth == 0) {
             this->hi_bid = this->min_price - 1;
         } else {
-            while (this->book[this->hi_bid].isEmpty()) this->hi_bid--;
+            while (this->book[this->hi_bid-this->min_price].isEmpty()) this->hi_bid--;
         }
     } else {
         this->sell_depth -= ret->quantity;
         if (this->sell_depth == 0) {
             this->lo_ask = this->max_price + 1;
         } else {
-            while (this->book[this->lo_ask].isEmpty()) this->lo_ask++;
+            while (this->book[this->lo_ask-this->min_price].isEmpty()) this->lo_ask++;
         }
     }
 
@@ -69,12 +69,11 @@ Order Orderbook::copy_order(Order order) {
 }
 
 // Places order and returns orders that were matched
-// TODO: Update to suitably fix indexing for order pricing
 std::vector<Order> Orderbook::place_order(Order order) {
     std::vector<Order> orders;
     if (order.direction == BUY) {
         while (order.price >= this->lo_ask) {
-            Order cur = this->book[this->lo_ask].dequeue(); // Matched order
+            Order cur = this->book[this->lo_ask-this->min_price].dequeue(); // Matched order
             if (order.quantity == cur.quantity) {
                 this->prices.erase(cur.order_id); // Delete cur from prices dict
                 order.price = cur.price; // Update price to cur
@@ -89,7 +88,7 @@ std::vector<Order> Orderbook::place_order(Order order) {
                 if (this->sell_depth == 0) {
                     this->lo_ask = this->max_price + 1;
                 } else {
-                    while (this->book[this->lo_ask].isEmpty()) this->lo_ask++;
+                    while (this->book[this->lo_ask-this->min_price].isEmpty()) this->lo_ask++;
                 }
 
                 return orders; // Break out since we're done
@@ -105,7 +104,7 @@ std::vector<Order> Orderbook::place_order(Order order) {
                 // Update sell_depth and cur's quantity
                 cur.quantity -= order.quantity;
                 this->sell_depth -= order.quantity;
-                this->book[order.price].push(cur); // Toss back cur
+                this->book[order.price-this->min_price].push(cur); // Toss back cur
 
                 return orders; // Break out since we're done
             } else { // order.quantity > cur.quantity
@@ -129,19 +128,19 @@ std::vector<Order> Orderbook::place_order(Order order) {
                 if (this->sell_depth == 0) {
                     this->lo_ask = this->max_price + 1;
                 } else {
-                    while (this->book[this->lo_ask].isEmpty()) this->lo_ask++;
+                    while (this->book[this->lo_ask-this->min_price].isEmpty()) this->lo_ask++;
                 }
             }
         }
         // If we get here, we need to add the order to the book
-        this->book[order.price].push(order);
+        this->book[order.price-this->min_price].push(order);
         this->prices[order.order_id] = order.price;
         this->buy_depth += order.quantity;
         this->hi_bid = std::max(order.price, this->hi_bid);
         return orders;
     } else {
         while (order.price <= this->hi_bid) {
-            Order cur = this->book[this->hi_bid].dequeue(); // Matched order
+            Order cur = this->book[this->hi_bid-this->min_price].dequeue(); // Matched order
             if (order.quantity == cur.quantity) {
                 this->prices.erase(cur.order_id); // Delete cur from prices dict
                 order.price = cur.price; // Update price to cur
@@ -156,7 +155,7 @@ std::vector<Order> Orderbook::place_order(Order order) {
                 if (this->buy_depth == 0) {
                     this->hi_bid = this->min_price - 1;
                 } else {
-                    while (this->book[this->hi_bid].isEmpty()) this->hi_bid--;
+                    while (this->book[this->hi_bid-this->min_price].isEmpty()) this->hi_bid--;
                 }
 
                 return orders; // Break out since we're done
@@ -172,7 +171,7 @@ std::vector<Order> Orderbook::place_order(Order order) {
                 // Update buy_depth and cur's quantity
                 cur.quantity -= order.quantity;
                 this->buy_depth -= order.quantity;
-                this->book[order.price].push(cur); // Toss back cur
+                this->book[order.price-this->min_price].push(cur); // Toss back cur
 
                 return orders; // Break out since we're done
             } else { // order.quantity > cur.quantity
@@ -196,12 +195,12 @@ std::vector<Order> Orderbook::place_order(Order order) {
                 if (this->buy_depth == 0) {
                     this->hi_bid = this->min_price - 1;
                 } else {
-                    while (this->book[this->hi_bid].isEmpty()) this->hi_bid--;
+                    while (this->book[this->hi_bid-this->min_price].isEmpty()) this->hi_bid--;
                 }
             }
         }
         // If we get here, we need to add the order to the book
-        this->book[order.price].push(order);
+        this->book[order.price-this->min_price].push(order);
         this->prices[order.order_id] = order.price;
         this->sell_depth += order.quantity;
         this->lo_ask = std::min(order.price, this->lo_ask);
