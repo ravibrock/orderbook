@@ -1,13 +1,30 @@
 #include "orderbook.hpp"
 
-Orderbook::Orderbook(int min, int max) : buy_depth(0), sell_depth(0), orders(), min(min), max(max) {}
+/*
+TODO:
+- Add matching functionality
+    - Array of custom DLL deques
+- Add cancellation functionality
+    - Update order hashmap to point to each order's node
+    - This lets us remove efficiently
+- Implement get_orders
+*/
+Orderbook::Orderbook(int min, int max) :
+    buy_depth(0),
+    sell_depth(0),
+    min_price(min),
+    max_price(max),
+    lo_ask(min-1),
+    hi_bid(max+1),
+    book(max - min)
+{}
 
 int Orderbook::get_min_price() {
-    return this->min;
+    return this->min_price;
 }
 
 int Orderbook::get_max_price() {
-    return this->max;
+    return this->max_price;
 }
 
 std::optional<Order> Orderbook::cancel_order(int order_id) {

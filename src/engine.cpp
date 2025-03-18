@@ -1,6 +1,6 @@
 #include "engine.hpp"
 
-Engine::Engine() : orderbooks() {}
+Engine::Engine() {}
 
 Engine::Engine(std::vector<Market> markets) : orderbooks() {
     for (const auto& market : markets) {

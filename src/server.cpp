@@ -3,7 +3,7 @@
 #include "server.hpp"
 
 // Contructs a new orderbook server
-Server::Server(int port, Engine engine) : app(), engine(engine), port(port), users(), cur_order_idx() {
+Server::Server(int port, Engine engine) : engine(engine), port(port), cur_order_idx(0) {
     CROW_ROUTE(this->app, "/limit/<string>/<string>/<string>/<int>/<int>").methods(crow::HTTPMethod::POST)(
         [this](std::string user, std::string direction, std::string asset, int quantity, int price){
             bool dir;
