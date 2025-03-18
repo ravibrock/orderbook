@@ -8,7 +8,7 @@ Orderbook::Orderbook(int min, int max) :
     max_price(max),
     lo_ask(min-1),
     hi_bid(max+1),
-    book(max - min)
+    book(max - min + 1)
 {}
 
 int Orderbook::get_min_price() {
