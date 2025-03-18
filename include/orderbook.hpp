@@ -4,20 +4,7 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
-
-enum Direction {
-    BUY,
-    SELL,
-};
-
-struct Order {
-    std::string user;
-    bool direction;
-    std::string asset;
-    int quantity;
-    int price; // Support negative prices 2020 style
-    int order_id;
-};
+#include "order.hpp"
 
 class Orderbook {
 public:
