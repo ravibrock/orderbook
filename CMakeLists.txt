@@ -22,5 +22,5 @@ file(GLOB SRC_FILES "${PROJECT_SOURCE_DIR}/src/*.cpp")
 # create executable
 add_executable(${PROJECT_NAME} ${SRC_FILES})
 
-# link cpr, crow, and boost
+# link cpr and crow
 target_link_libraries(${PROJECT_NAME} PRIVATE cpr::cpr Crow::Crow)
