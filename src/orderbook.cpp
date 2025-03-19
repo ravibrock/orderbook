@@ -144,8 +144,8 @@ std::vector<Order> Orderbook::place_order(Order order) {
                 order.price = cur.price; // Update price to cur
 
                 // Add to return dict of matched orders
-                orders.push_back(cur);
-                orders.push_back(order);
+                orders.emplace_back(cur);
+                orders.emplace_back(order);
 
                 this->buy_depth -= cur.quantity; // Delete cur's depth from buy_depth
 

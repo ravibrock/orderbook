@@ -107,7 +107,7 @@ crow::response Server::limit_order(Order order) {
     order.order_id = this->cur_order_idx++;
     data["order_id"] = order.order_id;
 
-    for (Order fill : this->engine.place_order(order)) {
+    for (const Order& fill : this->engine.place_order(order)) {
         this->inform_user(fill);
     }
     return crow::response(200, data);
