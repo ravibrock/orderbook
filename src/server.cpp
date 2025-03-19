@@ -3,7 +3,7 @@
 #include "server.hpp"
 
 // Contructs a new orderbook server
-Server::Server(int port, Engine engine) : engine(engine), port(port), cur_order_idx(0) {
+Server::Server(int port, Engine engine) : engine(std::move(engine)), port(port), cur_order_idx(0) {
     CROW_ROUTE(this->app, "/limit/<string>/<string>/<string>/<int>/<int>").methods(crow::HTTPMethod::POST)(
         [this](std::string user, std::string direction, std::string asset, int quantity, int price){
             bool dir;
@@ -42,7 +42,7 @@ Server::Server(int port, Engine engine) : engine(engine), port(port), cur_order_
         }
     );
     CROW_ROUTE(this->app, "/user/<string>/<path>").methods(crow::HTTPMethod::POST)(
-        [this](std::string user_id, std::string callback){
+        [this](const std::string& user_id, const std::string& callback){
             return this->update_user(user_id, callback);
         }
     );
@@ -152,23 +152,22 @@ crow::response Server::cancel_order(int order_id) {
 }
 
 // Updates the callback for when a user is filled
-crow::response Server::update_user(std::string user_id, std::string callback) {
-    bool ret = false;
+crow::response Server::update_user(const std::string& user_id, const std::string& callback) {
+    bool ret = this->user_exists(user_id);
     crow::json::wvalue data;
-    if (this->user_exists(user_id)) ret = true;
     this->users[user_id] = callback;
     data["already_registered"] = ret;
     return crow::response(200, data);
 }
 
 // Adds orderbook to the engine
-crow::response Server::add_orderbook(Market market) {
+crow::response Server::add_orderbook(const Market& market) {
     this->engine.add_orderbook(market);
     return crow::response(200);
 }
 
 // Pings user when request is fulfilled
-int Server::inform_user(Order fill) {
+int Server::inform_user(const Order& fill) {
     std::string callback_url = this->users[fill.user];
     crow::json::wvalue data;
 
@@ -188,7 +187,7 @@ int Server::inform_user(Order fill) {
 }
 
 // Gets orders up/down to a certain price
-crow::response Server::get_orders(bool direction, std::string asset, int price) {
+crow::response Server::get_orders(bool direction, const std::string& asset, int price) {
     crow::json::wvalue data;
     if (!this->engine.orderbook_exists(asset)) {
         data["message"] = "orderbook does not exist";
@@ -196,14 +195,14 @@ crow::response Server::get_orders(bool direction, std::string asset, int price) 
     }
 
     std::unordered_map<int, int> orders = this->engine.get_orders(direction, asset, price);
-    for (auto&[price, quantity] : orders) {
+    for (const auto& [price, quantity] : orders) {
         data[std::to_string(price)] = quantity;
     }
     return crow::response(200, data);
 }
 
 // Checks if a user exists
-bool Server::user_exists(std::string user_id) {
+bool Server::user_exists(const std::string& user_id) {
     return this->users.find(user_id) != this->users.end();
 }
 

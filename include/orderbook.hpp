@@ -9,7 +9,7 @@
 class Orderbook {
 public:
     Orderbook(int min_price, int max_price);
-    std::vector<Order> place_order(Order order);
+    std::vector<Order> place_order(Order& order);
     std::optional<Order> cancel_order(int order_id);
     std::unordered_map<int, int> get_orders(bool direction, int price);
     uint64_t get_buy_depth();

@@ -54,7 +54,7 @@ uint64_t Orderbook::get_sell_depth() {
 }
 
 // Places order and returns orders that were matched
-std::vector<Order> Orderbook::place_order(Order order) {
+std::vector<Order> Orderbook::place_order(Order& order) {
     std::vector<Order> orders;
     if (order.quantity == 0) { // Edge case for market orders hitting empty book
         return orders;
