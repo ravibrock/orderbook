@@ -87,6 +87,7 @@ std::vector<Order> Orderbook::place_order(Order order) {
                 // We fill at order's qty and cur's price
                 Order nxt = this->copy_order(cur);
                 nxt.quantity = order.quantity;
+                order.price = cur.price;
 
                 // Add to return dict of matched orders
                 orders.push_back(nxt);
@@ -154,6 +155,7 @@ std::vector<Order> Orderbook::place_order(Order order) {
                 // We fill at order's qty and cur's price
                 Order nxt = this->copy_order(cur);
                 nxt.quantity = order.quantity;
+                order.price = cur.price;
 
                 // Add to return dict of matched orders
                 orders.push_back(nxt);
