@@ -95,7 +95,7 @@ std::vector<Order> Orderbook::place_order(Order order) {
                 // Update sell_depth and cur's quantity
                 cur.quantity -= order.quantity;
                 this->sell_depth -= order.quantity;
-                this->access_book(order.price).push(cur); // Toss back cur
+                this->access_book(cur.price).push(cur); // Toss back cur
 
                 return orders; // Break out since we're done
             } else { // order.quantity > cur.quantity
@@ -162,7 +162,7 @@ std::vector<Order> Orderbook::place_order(Order order) {
                 // Update buy_depth and cur's quantity
                 cur.quantity -= order.quantity;
                 this->buy_depth -= order.quantity;
-                this->access_book(order.price).push(cur); // Toss back cur
+                this->access_book(cur.price).push(cur); // Toss back cur
 
                 return orders; // Break out since we're done
             } else { // order.quantity > cur.quantity
