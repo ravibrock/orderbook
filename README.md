@@ -3,13 +3,16 @@
 This is an implementation of an orderbook in C++. It deploys as a web server and exposes a simple API for placing, querying, and cancelling orders. The API (along with the rest of the design) is built as a proof-of-concept, with a focus on understanding the data structures involved in an orderbook and getting the basic operations working. Consequently, I don't plan on adding certain features like auth that, while necessary for deploying to prod, aren't necessary for the book itself.
 
 ## Build
-Instructions are for MacOS. Nothing in the code should be MacOS specific, but I haven't built or tested on other platforms. To build, run:
+Instructions are for MacOS. Nothing in the code should be MacOS specific, but I haven't built or tested on other platforms. To build, execute:
 ```bash
+git clone https://github.com/ravibrock/orderbook.git
+cd orderbook
 brew install cpr crow
 CPLUS_INCLUDE_PATH="$(brew --prefix)/opt/llvm/include/c++/v1:$CPLUS_INCLUDE_PATH"
 CPLUS_INCLUDE_PATH="$(brew --prefix)/include:$CPLUS_INCLUDE_PATH"
 cmake -B build && cmake --build build
 ```
+The final binary will be `build/orderbook`.
 
 ## Test
 The `test/` directory contains some Python scripts used for testing. They are *not* comprehensive, but they do illustrate functionality.
