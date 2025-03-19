@@ -173,7 +173,7 @@ int Server::inform_user(Order fill) {
     crow::json::wvalue data;
 
     data["user"] = fill.user;
-    data["direction"] = fill.direction;
+    data["direction"] =  fill.direction ? "sell" : "buy";
     data["asset"] = fill.asset;
     data["quantity"] = fill.quantity;
     data["price"] = fill.price;
