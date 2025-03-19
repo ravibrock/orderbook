@@ -124,7 +124,7 @@ std::vector<Order> Orderbook::place_order(Order order) {
             }
         }
         // If we get here, we need to add the order to the book
-        this->access_book(order.price).push(order);
+        this->access_book(order.price).enqueue(order);
         this->prices[order.order_id] = order.price;
         this->buy_depth += order.quantity;
         this->hi_bid = std::max(order.price, this->hi_bid);
@@ -191,7 +191,7 @@ std::vector<Order> Orderbook::place_order(Order order) {
             }
         }
         // If we get here, we need to add the order to the book
-        this->access_book(order.price).push(order);
+        this->access_book(order.price).enqueue(order);
         this->prices[order.order_id] = order.price;
         this->sell_depth += order.quantity;
         this->lo_ask = std::min(order.price, this->lo_ask);
