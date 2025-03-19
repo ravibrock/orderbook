@@ -53,15 +53,8 @@ uint64_t Orderbook::get_sell_depth() {
     return this->sell_depth;
 }
 
-Order Orderbook::copy_order(Order order) {
-    Order ret;
-    ret.order_id = order.order_id;
-    ret.asset = order.asset;
-    ret.direction = order.direction;
-    ret.price = order.price;
-    ret.quantity = order.quantity;
-    ret.user = order.user;
-    return ret;
+Order Orderbook::copy_order(const Order& order) {
+    return order;
 }
 
 // Places order and returns orders that were matched
@@ -228,6 +221,6 @@ std::unordered_map<int, int> Orderbook::get_orders(bool direction, int price) {
     return ret;
 }
 
-Queue Orderbook::access_book(int price) {
+Queue& Orderbook::access_book(int price) {
     return this->book[price - this->min_price];
 }
