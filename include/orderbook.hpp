@@ -27,6 +27,7 @@ private:
     std::vector<Queue> book; // Array of queues for orders
     std::unordered_map<int, int> prices; // Map of order IDs to prices
     Order copy_order(Order order);
+    Queue access_book(int price);
 };
 
 #endif // ORDERBOOK_H
