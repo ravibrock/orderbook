@@ -8,6 +8,8 @@ struct ListNode {
     Order order;
     ListNode* next;
     ListNode* prev;
+
+    ListNode(Order ord) : order(ord), next(nullptr), prev(nullptr) {}
 };
 
 class Queue {

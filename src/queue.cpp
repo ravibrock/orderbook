@@ -9,7 +9,7 @@ Queue::~Queue() {
 }
 
 void Queue::enqueue(Order order) {
-    ListNode* node = new ListNode{order, nullptr, nullptr};
+    ListNode* node = new ListNode{order};
     this->orders[order.order_id] = node;
     if (this->isEmpty()) {
         this->head = node;
@@ -23,7 +23,7 @@ void Queue::enqueue(Order order) {
 }
 
 void Queue::push(Order order) {
-    ListNode* node = new ListNode{order, nullptr, nullptr};
+    ListNode* node = new ListNode{order};
     this->orders[order.order_id] = node;
     if (this->isEmpty()) {
         this->head = node;
