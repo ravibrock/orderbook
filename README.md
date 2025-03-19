@@ -10,6 +10,9 @@ CPLUS_INCLUDE_PATH="$(brew --prefix)/include:$CPLUS_INCLUDE_PATH"
 cmake -B build && cmake --build build
 ```
 
+## Test
+The `test/` directory contains some Python scripts used for testing. They are *not* comprehensive, but they do illustrate functionality.
+
 ## API Reference
 ### **Limit Order**
 #### **POST /limit/{user}/{direction}/{asset}/{quantity}/{price}**
