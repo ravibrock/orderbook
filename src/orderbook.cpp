@@ -53,10 +53,6 @@ uint64_t Orderbook::get_sell_depth() {
     return this->sell_depth;
 }
 
-Order Orderbook::copy_order(const Order& order) {
-    return order;
-}
-
 // Places order and returns orders that were matched
 std::vector<Order> Orderbook::place_order(Order order) {
     std::vector<Order> orders;
@@ -85,7 +81,7 @@ std::vector<Order> Orderbook::place_order(Order order) {
                 return orders; // Break out since we're done
             } else if (order.quantity < cur.quantity) {
                 // We fill at order's qty and cur's price
-                Order nxt = this->copy_order(cur);
+                Order nxt = cur;
                 nxt.quantity = order.quantity;
                 order.price = cur.price;
 
@@ -100,8 +96,7 @@ std::vector<Order> Orderbook::place_order(Order order) {
 
                 return orders; // Break out since we're done
             } else { // order.quantity > cur.quantity
-                Order part = this->copy_order(order);
-
+                Order part = order;
                 this->prices.erase(cur.order_id); // Delete cur from prices dict
 
                 // We fill at cur's qty and price
@@ -153,7 +148,7 @@ std::vector<Order> Orderbook::place_order(Order order) {
                 return orders; // Break out since we're done
             } else if (order.quantity < cur.quantity) {
                 // We fill at order's qty and cur's price
-                Order nxt = this->copy_order(cur);
+                Order nxt = cur;
                 nxt.quantity = order.quantity;
                 order.price = cur.price;
 
@@ -168,8 +163,7 @@ std::vector<Order> Orderbook::place_order(Order order) {
 
                 return orders; // Break out since we're done
             } else { // order.quantity > cur.quantity
-                Order part = this->copy_order(order);
-
+                Order part = order;
                 this->prices.erase(cur.order_id); // Delete cur from prices dict
 
                 // We fill at cur's qty and price
