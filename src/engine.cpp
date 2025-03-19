@@ -23,7 +23,7 @@ bool Engine::orderbook_exists(std::string asset) {
     return this->orderbooks.find(asset) != this->orderbooks.end();
 }
 
-Orderbook Engine::get_orderbook(std::string name) {
+Orderbook& Engine::get_orderbook(std::string name) {
     return this->orderbooks.find(name)->second;
 }
 

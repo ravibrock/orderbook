@@ -29,7 +29,7 @@ public:
 private:
     std::unordered_map<int, std::string> id_to_asset;
     std::unordered_map<std::string, Orderbook> orderbooks;
-    Orderbook get_orderbook(std::string name);
+    Orderbook& get_orderbook(std::string name);
 };
 
 #endif // ENGINE_H
