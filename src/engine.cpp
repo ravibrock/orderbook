@@ -29,6 +29,7 @@ Orderbook Engine::get_orderbook(std::string name) {
 
 // Caller is responsible for checking if the orderbook exists
 std::vector<Order> Engine::place_order(Order order) {
+    this->id_to_asset[order.order_id] = order.asset;
     return this->get_orderbook(order.asset).place_order(order);
 }
 
@@ -59,10 +60,5 @@ int Engine::get_max_price(std::string asset) {
 
 // Order does not have to exist
 std::optional<Order> Engine::cancel_order(int order_id) {
-    for (auto& orderbook : this->orderbooks) {
-        if (std::optional<Order> order = orderbook.second.cancel_order(order_id)) {
-            return order;
-        }
-    }
-    return std::nullopt;
+    return this->get_orderbook(this->id_to_asset[order_id]).cancel_order(order_id);
 }
