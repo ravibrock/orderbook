@@ -3,7 +3,7 @@
 This is an implementation of an orderbook in C++. It deploys as a web server and exposes a simple API for placing, querying, and cancelling orders. The API (along with the rest of the design) is built as a proof-of-concept, with a focus on understanding the data structures involved in an orderbook and getting the basic operations working. Consequently, I don't plan on adding certain features like auth that, while necessary for deploying to prod, aren't necessary for the book itself.
 
 ## Build
-Ensure that the [https://github.com/libcpr/cpr](cpr) and [https://github.com/CrowCpp/Crow](crow) C++ modules are installed and findable by CMake. Then, run
+Ensure that the [cpr](https://github.com/libcpr/cpr) and [crow](https://github.com/CrowCpp/Crow) C++ modules are installed and findable by CMake. Then, run
 ```bash
 git clone https://github.com/ravibrock/orderbook.git
 cd orderbook
