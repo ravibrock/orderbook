@@ -45,7 +45,7 @@ def run_callback_server(port=18081):
 def start_orderbook_server(port=18080):
     # assume the orderbook server executable is in the current directory named "./orderbook_server"
     print("starting orderbook server...")
-    proc = subprocess.Popen(["./orderbook_server", "--port", str(port)],
+    proc = subprocess.Popen(["../build/orderbook", "--port", str(port)],
                             stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     # give the server time to start up
     time.sleep(2)
