@@ -61,14 +61,14 @@ The `test/` directory contains some Python scripts used for testing. They are *n
 
 ---
 
-### **Add Order Book**
+### **Add Orderbook**
 #### **POST /books/{asset}/{min_price}/{max_price}**
-- Adds an order book for an asset.
+- Adds an orderbook for an asset.
 - **Parameters:**
   - `asset` (string): Asset name.
   - `min_price` (int): Minimum price limit.
   - `max_price` (int): Maximum price limit.
-- **Response:** Order book creation status.
+- **Response:** Orderbook creation status.
 
 ---
 
@@ -81,7 +81,7 @@ The `test/` directory contains some Python scripts used for testing. They are *n
 
 ---
 
-### **Shutdown Server**
+### **Shut Down Server**
 #### **POST /shutdown**
 - Shuts down the server.
 - **Response:** Shutdown confirmation.
